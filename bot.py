@@ -5,6 +5,7 @@ import random
 import discord
 import dbcontrol
 import datetime
+import event
 import commands as c
 from constants import *
 from discord import utils
@@ -53,6 +54,7 @@ async def on_member_join(member):
 async def on_message(ctx):
     await bot.process_commands(ctx)
     profile = dbcontrol.load_profile(ctx.author)
+    event.check(ctx.author)
     xp = len(ctx.content) + 25
     text = 'gachimuchi'
     ids = []
@@ -160,6 +162,7 @@ async def on_voice_state_update(member, before, after):
         if member.voice.afk is not True:
             VoiceMembers.update({member.id: True})
             while VoiceMembers[member.id]:
+                event.check(member)
                 await dbcontrol.update_voice_time(member, f"{datetime.datetime.today().day}:{datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}")
                 await asyncio.sleep(1)
                 await dbcontrol.update_voice_time(member, f"{datetime.datetime.today().day}:{datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}", True)
@@ -216,6 +219,11 @@ async def _buy(ctx):
 @bot.command()
 async def buy(ctx, cmd, *options):
     await c.buy(ctx, cmd, options)
+
+
+@slash.command(name="event", description="Show event for this game", guild_ids=test_guilds)
+async def _event(ctx):
+    await c.event(ctx)
 
 
 bot.run(token)

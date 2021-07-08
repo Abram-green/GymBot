@@ -200,3 +200,8 @@ async def buy(ctx, cmd, options):
         await ctx.send("Успешно!")
         p["xp"] -= 100000
     dbcontrol.save_profile(p, ctx.author)
+
+
+async def event(ctx):
+    text = f"Сегодня задание: Просидеть в войсе 2 часа"
+    await ctx.send(text)
