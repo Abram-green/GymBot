@@ -20,6 +20,8 @@ parts/
 sdist/
 var/
 wheels/
+userdata/
+.idea/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -32,6 +34,7 @@ MANIFEST
 *.spec
 
 # Installer logs
+config.py
 pip-log.txt
 pip-delete-this-directory.txt
 
