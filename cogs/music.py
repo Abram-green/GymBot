@@ -10,25 +10,9 @@ import json
 import time
 from dislash import slash_commands, Option, Type
 from dislash.interactions import *
-
+from constants import *
 youtube_dl.utils.bug_reports_message = lambda: ''
-ytdl_format_options = {
-    'format': 'bestaudio',
-    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'restrictfilenames': True,
-    'noplaylist': True,
-    'nocheckcertificate': True,
-    'ignoreerrors': False,
-    'logtostderr': False,
-    'quiet': True,
-    'no_warnings': True,
-    'default_search': 'auto',
-    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
-}
-ffmpeg_before_opts = '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'
-ffmpeg_options = {
-    'options': '-vn'
-}
+
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 queues = {}
 
@@ -350,9 +334,35 @@ class Music(commands.Cog):
                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                 now_playing = await ctx.send(embed=embed)
             else:
-                await ctx.send(f'{ctx.message.author.mention},\nНет запущеных треков')
+                await ctx.send('Я вообще сейчас ничего не воизпровожу!', delete_after=20)
         else:
             await ctx.send(f'{ctx.message.author.mention}, я не подключен к каналу')
+
+    @commands.command(name='pause')
+    async def pause(self, ctx):
+        voice_client = ctx.message.guild.voice_client
+        if voice_client.is_playing():
+            await voice_client.pause()
+            emb = discord.Embed(
+                title="Pause!",
+                color=ctx.author.top_role.color
+            )
+            await ctx.send(embed=emb)
+        else:
+            await ctx.send('Я вообще сейчас ничего не воизпровожу!', delete_after=20)
+
+    @commands.command(name='resume')
+    async def resume(self, ctx):
+        voice_client = ctx.message.guild.voice_client
+        if voice_client.is_paused():
+            await voice_client.resume()
+            emb = discord.Embed(
+                title="Resume!",
+                color=ctx.author.top_role.color
+            )
+            await ctx.send(embed=emb)
+        else:
+            await ctx.send('Я вообще сейчас ничего не воизпровожу!', delete_after=20)
 
     @commands.command()
     async def stop(self, ctx):

@@ -29,5 +29,22 @@ shopList = {
     "закреп": 3,
     "ник": 4
 }
+ytdl_format_options = {
+    'format': 'bestaudio',
+    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+    'restrictfilenames': True,
+    'noplaylist': True,
+    'nocheckcertificate': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': True,
+    'no_warnings': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+}
+ffmpeg_before_opts = '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'
+ffmpeg_options = {
+    'options': '-vn'
+}
 
 token = config.TOKEN
