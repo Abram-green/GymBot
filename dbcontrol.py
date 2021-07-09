@@ -64,7 +64,6 @@ def load_profile(member):
     user = cur.execute(sql_request).fetchall()
     cur.connection.commit()
     close(cur)
-    print(list(list(user)[0]))
     return convert(list(list(user)[0]))
 
 
