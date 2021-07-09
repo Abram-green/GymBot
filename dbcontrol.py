@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import sqlite3
 from constants import *
 
 
@@ -11,42 +12,77 @@ class unicode:
         return str.encode(text, encoding="utf-8")
 
 
-def new_profile(member):
+def connect(name):
+    con = sqlite3.connect(name)
+    cursor = con.cursor()
+    return cursor
+
+
+def close(cursor):
+    cursor.close()
+
+
+def convert(p):
+    data = {
+        "level": p[0],
+        "xp": p[1],
+        "xp_l": p[2],
+        "VoiceTime": p[3],
+        "VoiceDate": p[4],
+        "VoiceDate1": p[5]
+    }
+    return data
+
+
+def new_member(member):
     data = {
         "level": 1,
         "xp": 0,
         "xp_l": 100,
-        "gym_emoji": 0,
         "VoiceTime": 0,
+        "VoiceDate": 0,
+        "VoiceDate1": 0
     }
+    new_profile(member)
     save_profile(data, member)
 
 
+def new_profile(member):
+    cur = connect("db.db")
+    try:
+        sql_request = f"INSERT INTO users (id) VALUES ({member.id})"
+        cur.execute(sql_request)
+        cur.connection.commit()
+    except Exception:
+        pass
+    close(cur)
+
+
 def load_profile(member):
-    with open("UserData/" + str(member) + ".json", "r") as file:
-        json_data = file.read()
-    profile = json.loads(json_data)
-    return profile
+    cur = connect("db.db")
+    sql_request = f"SELECT * FROM users WHERE `id` = {member.id}"
+    user = cur.execute(sql_request).fetchall()
+    cur.connection.commit()
+    close(cur)
+    return convert(list(list(user)[0]))
 
 
-def save_profile(json_data, member):
-    json_data = json.dumps(json_data)
-    with open("UserData/" + str(member) + ".json", "w") as file:
-        file.write(json_data)
+def save_profile(data, member):
+    cur = connect("db.db")
+    sql_request = f"UPDATE users SET `level`={data['level']}, `xp`={data['xp']} WHERE `id`={member.id}"
+    cur.execute(sql_request)
+    cur.connection.commit()
+    sql_request = f"UPDATE users SET `xp_l`={data['xp_l']}, `VoiceTime`={data['VoiceTime']} WHERE `id`={member.id}"
+    cur.execute(sql_request)
+    cur.connection.commit()
+    sql_request = f"UPDATE users SET `VoiceDate`={time.time()}, `VoiceDate1`={time.time()} WHERE `id`={member.id}"
+    cur.execute(sql_request)
+    cur.connection.commit()
+    close(cur)
 
 
 def time_to_second(time, time1):
-    time = time.split(":")
-    day = int(time[0])
-    hour = int(time[1])
-    minute = int(time[2])
-    second = int(time[3])
-    time1 = time1.split(":")
-    day1 = int(time1[0])
-    hour1 = int(time1[1])
-    minute1 = int(time1[2])
-    second1 = int(time1[3])
-    return (second + (minute * 60) + (hour * 60 * 60) + (day * 24 * 60 * 60)) - (second1 + (minute1 * 60) + (hour1 * 60 * 60) + (day1 * 24 * 60 * 60))
+    return time - time1
 
 
 async def update_voice_time(member, date, t=False):
