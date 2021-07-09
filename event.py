@@ -1,16 +1,68 @@
 import dbcontrol
 import discord
+import sqlite3
 
-eventMember = {}
+
+def convert(p):
+    data = {
+        "res": p[1]
+    }
+    return data
+
+
+def connect(name):
+    con = sqlite3.connect(name)
+    cursor = con.cursor()
+    return cursor
+
+
+def close(cursor):
+    cursor.close()
+
+
+def new_profile(member):
+    cur = connect("event.db")
+    try:
+        sql_request = f"INSERT INTO event (id) VALUES ({member.id})"
+        cur.execute(sql_request)
+        cur.connection.commit()
+    except Exception:
+        pass
+    close(cur)
+
+
+def load_profile(member):
+    cur = connect("event.db")
+    sql_request = f"SELECT * FROM event WHERE `id` = {member.id}"
+    user = cur.execute(sql_request).fetchall()
+    cur.connection.commit()
+    close(cur)
+    return convert(list(list(user)[0]))
+
+
+def save_profile(data, member):
+    cur = connect("event.db")
+    sql_request = f"UPDATE event SET `res`={data['res']} WHERE `id`={member.id}"
+    cur.execute(sql_request)
+    cur.connection.commit()
+    close(cur)
+
 
 def check(member):
     p = dbcontrol.load_profile(member)
-    if eventMember.get(member) is None:
-        eventMember.update({member: p["VoiceTime"]})
-    else:
-        if p["VoiceTime"] - eventMember.get(member) >= 7200:
+    try:
+        m = load_profile(member)
+        res = int(m["res"])
+        if p["VoiceTime"] - res >= 7200:
             p["xp"] += 20000
-            eventMember.update({member: p["VoiceTime"] + 10**100})
+            m = {"res": p["VoiceTime"] + 10 ** 100}
+            save_profile(m, member)
         else:
             pass
-    dbcontrol.save_profile(p, member)
+        dbcontrol.save_profile(p, member)
+    except Exception:
+        data = {
+            "res": str(p["VoiceTime"])
+        }
+        new_profile(member)
+        save_profile(data, member)
