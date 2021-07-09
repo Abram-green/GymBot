@@ -203,5 +203,5 @@ async def buy(ctx, cmd, options):
 
 
 async def event(ctx):
-    text = f"Сегодня задание: Просидеть в войсе 2 часа"
+    text = f"Сегодня задание: Заработать 10000 опыта\nНаграда: 30000xp"
     await ctx.send(text)
