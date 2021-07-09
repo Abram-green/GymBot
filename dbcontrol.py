@@ -64,7 +64,10 @@ def load_profile(member):
     user = cur.execute(sql_request).fetchall()
     cur.connection.commit()
     close(cur)
-    return convert(list(list(user)[0]))
+    try:
+        return convert(list(user)[0])
+    except Exception:
+        return True
 
 
 def save_profile(data, member):
