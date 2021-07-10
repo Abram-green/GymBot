@@ -54,7 +54,6 @@ async def on_member_join(member):
 async def on_message(ctx):
     await bot.process_commands(ctx)
     profile = dbcontrol.load_profile(ctx.author)
-    event.check(ctx.author)
     xp = len(ctx.content) + 25
     text = 'gachimuchi'
     ids = []
@@ -153,6 +152,7 @@ async def on_message(ctx):
                 dbcontrol.save_profile(profile1, m)
     else:
         dbcontrol.save_profile(profile, ctx.author)
+    event.check(ctx.author)
 
 
 @bot.event
