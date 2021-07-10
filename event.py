@@ -53,16 +53,16 @@ def check(member):
     try:
         m = load_profile(member)
         res = int(m["res"])
-        if p["xp"] - res >= 10000:
-            p["xp"] += 30000
-            m = {"res": p["xp"] + 10 ** 100}
+        if res >= 200:
+            p["xp"] += 25000
+            m = {"res": 10 ** 100 * -1}
             save_profile(m, member)
         else:
             pass
         dbcontrol.save_profile(p, member)
     except Exception:
         data = {
-            "res": str(p["xp"])
+            "res": 0
         }
         new_profile(member)
         save_profile(data, member)
