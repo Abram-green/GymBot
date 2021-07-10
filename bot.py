@@ -162,7 +162,6 @@ async def on_voice_state_update(member, before, after):
         if member.voice.afk is not True:
             VoiceMembers.update({member.id: True})
             while VoiceMembers[member.id]:
-                event.check(member)
                 await dbcontrol.update_voice_time(member, f"{datetime.datetime.today().day}:{datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}")
                 await asyncio.sleep(1)
                 await dbcontrol.update_voice_time(member, f"{datetime.datetime.today().day}:{datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}", True)
